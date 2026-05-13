@@ -5,9 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body style="margin:0;padding:0;background:#0b1a3b;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;">
   <div style="text-align:center;color:#fff;max-width:520px;padding:40px;width:100%;">
-    
+
     <div id="loading">
       <div style="font-size:64px;margin-bottom:16px;">⏳</div>
       <h1 style="font-size:24px;">Loading your reward...</h1>
@@ -17,7 +18,7 @@
       <div style="font-size:64px;margin-bottom:16px;">💎</div>
       <h1 style="font-size:28px;margin-bottom:8px;">Payment successful!</h1>
       <p style="color:#a0c0ff;margin-bottom:32px;">Your reward code:</p>
-      
+
       <div style="background:#111d3c;border:2px dashed rgba(120,180,255,0.4);border-radius:16px;padding:24px;margin-bottom:24px;">
         <div id="code" style="font-size:36px;font-weight:900;letter-spacing:6px;color:#ffd700;font-family:monospace;"></div>
       </div>
@@ -30,21 +31,40 @@
       <p style="color:rgba(180,200,255,0.45);font-size:12px;">⚠️ One-time use only. Do not share.<br>Questions? Discord: snakez_7</p>
     </div>
 
+    <div id="under1" style="display:none;">
+      <div style="font-size:64px;margin-bottom:16px;">🪙</div>
+      <h1 style="font-size:28px;margin-bottom:8px;">Thanks for your support!</h1>
+      <p style="color:#a0c0ff;margin-bottom:24px;">
+        Your donation was under €1, so no reward code was generated.
+      </p>
+
+      <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:16px;margin-bottom:24px;">
+        <p style="color:#a0c0ff;font-size:14px;margin:0;">
+          Donations of €1 or more unlock a reward code.
+        </p>
+      </div>
+
+      <p style="color:rgba(180,200,255,0.45);font-size:12px;">
+        Want to get a reward next time? Donate at least €1.<br>
+        Questions? Discord: snakez_7
+      </p>
+    </div>
+
     <div id="error" style="display:none;">
       <div style="font-size:64px;margin-bottom:16px;">❌</div>
       <h1 style="font-size:24px;">Something went wrong</h1>
-      <p style="color:#a0c0ff;">Can't find your code. Are you sure you paid 1 euro or more (no rewards under 1 euro)? Contact Discord: snakez_7</p>
+      <p style="color:#a0c0ff;">Can't find your code. Are you sure you paid €1 or more? Contact Discord: snakez_7</p>
     </div>
- 
+
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search)
-    const sessionId = params.get('session_id')
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get('session_id');
 
     if (!sessionId) {
-      document.getElementById('loading').style.display = 'none'
-      document.getElementById('error').style.display = 'block'
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'block';
     } else {
       fetch(`https://jqzobxicfjgratprewdx.supabase.co/functions/v1/get-code?session_id=${sessionId}`, {
         headers: {
@@ -53,18 +73,28 @@
       })
       .then(r => r.json())
       .then(data => {
-        document.getElementById('loading').style.display = 'none'
+        document.getElementById('loading').style.display = 'none';
+
+        const amount = Number(data.amount || 0);
+
+        if (amount > 0 && amount < 1) {
+          document.getElementById('under1').style.display = 'block';
+          return;
+        }
+
         if (data.code) {
-          document.getElementById('code').textContent = data.code
-          document.getElementById('success').style.display = 'block'
+          document.getElementById('code').textContent = data.code;
+          document.getElementById('success').style.display = 'block';
+        } else if (amount > 0 && amount < 1) {
+          document.getElementById('under1').style.display = 'block';
         } else {
-          document.getElementById('error').style.display = 'block'
+          document.getElementById('error').style.display = 'block';
         }
       })
       .catch(() => {
-        document.getElementById('loading').style.display = 'none'
-        document.getElementById('error').style.display = 'block'
-      })
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('error').style.display = 'block';
+      });
     }
   </script>
 </body>
