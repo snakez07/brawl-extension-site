@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Payment Successful - Brawl Extension</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background:#0b1a3b;font-family:Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;">
+  <div style="text-align:center;color:#fff;max-width:520px;padding:40px;width:100%;">
+    
+    <div id="loading">
+      <div style="font-size:64px;margin-bottom:16px;">⏳</div>
+      <h1 style="font-size:24px;">Loading your reward...</h1>
+    </div>
+
+    <div id="success" style="display:none;">
+      <div style="font-size:64px;margin-bottom:16px;">💎</div>
+      <h1 style="font-size:28px;margin-bottom:8px;">Payment successful!</h1>
+      <p style="color:#a0c0ff;margin-bottom:32px;">Your reward code:</p>
+      
+      <div style="background:#111d3c;border:2px dashed rgba(120,180,255,0.4);border-radius:16px;padding:24px;margin-bottom:24px;">
+        <div id="code" style="font-size:36px;font-weight:900;letter-spacing:6px;color:#ffd700;font-family:monospace;"></div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:16px;margin-bottom:24px;">
+        <p style="color:#a0c0ff;font-size:14px;margin:0 0 8px;">Enter this code in the <strong>🔑 Redeem Code</strong> tab in the extension.</p>
+        <p style="color:rgba(180,200,255,0.5);font-size:12px;margin:0;">📧 A copy has also been sent to your email.</p>
+      </div>
+
+      <p style="color:rgba(180,200,255,0.45);font-size:12px;">⚠️ One-time use only. Do not share.<br>Questions? Discord: snakez_7</p>
+    </div>
+
+    <div id="error" style="display:none;">
+      <div style="font-size:64px;margin-bottom:16px;">❌</div>
+      <h1 style="font-size:24px;">Something went wrong</h1>
+      <p style="color:#a0c0ff;">Can't find your code. Contact Discord: snakez_7</p>
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get('session_id')
+
+    if (!sessionId) {
+      document.getElementById('loading').style.display = 'none'
+      document.getElementById('error').style.display = 'block'
+    } else {
+      fetch(`https://jqzobxicfjgratprewdx.supabase.co/functions/v1/get-code?session_id=${sessionId}`, {
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impxem9ieGljZmpncmF0cHJld2R4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2MzQ0OTgsImV4cCI6MjA1ODIxMDQ5OH0.dImoAQuu9jEZkiieuU7YvVmpQnBZsjtOw58I-_0R3Ic'
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('loading').style.display = 'none'
+        if (data.code) {
+          document.getElementById('code').textContent = data.code
+          document.getElementById('success').style.display = 'block'
+        } else {
+          document.getElementById('error').style.display = 'block'
+        }
+      })
+      .catch(() => {
+        document.getElementById('loading').style.display = 'none'
+        document.getElementById('error').style.display = 'block'
+      })
+    }
+  </script>
+</body>
+</html>
