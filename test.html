@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Image Test</title>
+<style>
+  body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+  h2 { color: #facc15; }
+  .grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .item { text-align: center; font-size: 10px; width: 70px; }
+  .item img { width: 40px; height: 40px; object-fit: contain; border: 1px solid #333; background: #222; }
+  .ok { color: #4ade80; }
+  .err { color: #f87171; }
+  #summary { position: fixed; top: 10px; right: 10px; background: #1e293b; padding: 12px; border-radius: 8px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div id="summary">Loading...</div>
+<h2>Brawler Portraits</h2>
+<div class="grid" id="portraits"></div>
+<h2>Starpowers</h2>
+<div class="grid" id="starpowers"></div>
+<h2>Gadgets</h2>
+<div class="grid" id="gadgets"></div>
+<h2>Hypercharges</h2>
+<div class="grid" id="hypercharges"></div>
+<h2>Buffies</h2>
+<div class="grid" id="buffies"></div>
+<h2>Static UI Images</h2>
+<div class="grid" id="static"></div>
+
+<script>
+const BASE = 'https://cdn.jsdelivr.net/gh/snakez07/brawl-extension-site@main/images';
+const SG = BASE + '/starpowersandgadgets';
+const BF = BASE + '/buffy';
+
+let ok = 0, fail = 0;
+
+function testImg(container, url, label) {
+  const item = document.createElement('div');
+  item.className = 'item';
+  const img = document.createElement('img');
+  img.loading = 'lazy';
+  const lbl = document.createElement('div');
+  lbl.textContent = label;
+  img.onload  = () => { lbl.className = 'ok'; ok++;  updateSummary(); };
+  img.onerror = () => { lbl.className = 'err'; fail++; updateSummary(); img.style.border='2px solid red'; };
+  img.src = url;
+  item.appendChild(img);
+  item.appendChild(lbl);
+  document.getElementById(container).appendChild(item);
+}
+
+function updateSummary() {
+  document.getElementById('summary').innerHTML = `✅ ${ok} OK<br>❌ ${fail} FAILED`;
+}
+
+// All brawlers (lowercase slugs as used in filenames)
+const brawlers = [
+  'Shelly','Nita','Colt','Bull','Brock','El Primo','Barley','Poco','Rosa',
+  'Jessie','Dynamike','Tick','8-Bit','Rico','Darryl','Penny','Carl','Jacky',
+  'Gus','Bo','Emz','Stu','Piper','Pam','Frank','Bibi','Bea','Nani','Edgar',
+  'Griff','Grom','Bonnie','Gale','Colette','Belle','Ash','Lola','Sam','Mandy',
+  'Maisie','Hank','Pearl','Larry & lawrie','Angelo','Berry','Clancy','Moe',
+  'Juju','Chuck','Charlie','Melodie','Lily','Draco','Amber','Meg','Surge',
+  'Chester','Cordelius','Doug','Gray','Janet','Otis','Ruffs','Squeak',
+  'Eve','Janet','Buzz','Fang','Lola','Tara','Gene','Max','Mortis',
+  'Mr. p','Sprout','Byron','Sandy','Crow','Leon','Sandy','Spike',
+  'Crow','Leon','Amber','Meg','Surge','Colette','Lou','Ruffs','Belle',
+  'Buzz','Ash','Lola','Fang','Eve','Janet','Bonnie','Otis','Sam',
+  'Gus','Mandy','Maisie','Hank','Pearl','Angelo','Berry','Clancy','Moe',
+  'Juju','Chuck','Charlie','Melodie','Lily','Draco','Jae-Yong','Kaze','Lumi',
+  'R-T','Finx','Meeple','Kit','Ollie','Buster','Gray','Doug','Squeak',
+  'Buzz Lightyear','Alli','Zlatan','Starr nova','Ziggy','Pierce'
+];
+
+// Deduplicate
+const uniqueBrawlers = [...new Set(brawlers)];
+
+// Portraits
+uniqueBrawlers.forEach(b => {
+  testImg('portraits', `${BASE}/${b}.png`, b);
+});
+
+// Starpowers & gadgets (slug = lowercase)
+uniqueBrawlers.forEach(b => {
+  const slug = b.toLowerCase().replace(/\.\s*/g, '').replace(/\s*&\s*/g, ' & ');
+  testImg('starpowers', `${SG}/${slug}_starpower_01.png`, `${b} SP1`);
+  testImg('starpowers', `${SG}/${slug}_starpower_02.png`, `${b} SP2`);
+  testImg('gadgets',    `${SG}/${slug}_gadget_01.png`,    `${b} G1`);
+  testImg('gadgets',    `${SG}/${slug}_gadget_02.png`,    `${b} G2`);
+  testImg('hypercharges', `${SG}/${slug}_hypercharge.png`, `${b} HC`);
+});
+
+// Buffy base
+testImg('buffies', `${BF}/buffy_base.png`, 'buffy_base');
+testImg('buffies', `${BF}/buffy_base_bling.png`, 'buffy_bling');
+
+// Static UI
+const statics = [
+  'settings','brawlers','leaderboard','chat','pass','message','indo',
+  'save','shop_button','trophy','trophyneon','coins','credits','gear',
+  'lock','lock2.svg','marker.svg','clock.gif','account','fame','level',
+  'highest','streak','ranked','solo','duo','3v3','events','championship',
+  'Robo-Rumble','Big','fallback','wifi_icon','no_wifi_icon',
+  'epic_gear','mythic_gear','power-level','prestige','prestigetotal',
+  'battlelog','search','searchplayer','mail','clear','gift','meta','unlock',
+  'animated1.gif','animated2.gif','animated3.gif',
+  'earth','moon','redplanet','saturnus','sun','meteor','alien',
+  'bronze','silver','gold','diamond','mythic','legendary','masters','pro',
+  'battle_card_earth','battle_card_moon','battle_card_mars','battle_card_meteor',
+  'battle_card_saturn','battle_card_sun','battle_card_alien',
+  'Battle_Card-Bronze','Battle_Card-Silver','Battle_Card-Gold','Battle_Card-Diamond',
+  'Battle_Card-Mythic','Battle_Card-Legendary','Battle_Card-Masters','Battle_Card-Pro',
+  'Battle_Card-StarrForce','StarrForce',
+  'Ranks/Bronze','Ranks/Silver','Ranks/Gold','Ranks/Wood',
+  'Ranks/Prestige1','Ranks/Prestige2','Ranks/Prestige3',
+  'style_dark','style_gold','style_pink',
+  'style_preview_dark','style_preview_gold','style_preview_pink',
+  'starpowersandgadgets/starbase','starpowersandgadgets/gadgetbase',
+  'starpowersandgadgets/hyperchargebase','starpowersandgadgets/damage_gear',
+  'starpowersandgadgets/health_gear','starpowersandgadgets/speed_gear',
+  'starpowersandgadgets/shield_gear','starpowersandgadgets/vision_gear',
+  'starpowersandgadgets/gadget_gear',
+];
+statics.forEach(s => {
+  const url = s.endsWith('.gif') || s.endsWith('.svg') ? `${BASE}/${s}` : `${BASE}/${s}.png`;
+  testImg('static', url, s.split('/').pop());
+});
+</script>
+</body>
+</html>
